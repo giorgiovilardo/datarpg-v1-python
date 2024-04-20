@@ -21,7 +21,7 @@ class Attacker(HasName, HasLevel):
     pass
 
 
-class Defender(Liver, HasHealth, HasName):
+class Defender(Liver, HasHealth, HasName, HasLevel):
     pass
 
 
@@ -39,6 +39,7 @@ def damage(attacker: Attacker, defender: Defender) -> Defender:
         "health": new_health,
         "is_dead": is_dead,
         "name": defender["name"],
+        "level": defender["level"],
     }
 
 

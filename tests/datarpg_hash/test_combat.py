@@ -16,19 +16,21 @@ def test_damage() -> None:
 def test_damage_ez_test_ez_life() -> None:
     assert combat.damage(
         {"level": 2, "name": "foffo"},
-        {"health": 1000, "is_dead": False, "name": "faffo"},
+        {"health": 1000, "is_dead": False, "name": "faffo", "level": 2},
     ) == {
         "name": "faffo",
         "health": 998,
         "is_dead": False,
+        "level": 2,
     }
     assert combat.damage(
         {"level": 2000, "name": "foffo"},
-        {"name": "faffo", "health": 1000, "is_dead": True},
+        {"name": "faffo", "health": 1000, "is_dead": True, "level": 2},
     ) == {
         "name": "faffo",
         "health": 0,
         "is_dead": True,
+        "level": 2,
     }
 
 
@@ -93,6 +95,6 @@ def test_damage_increased_rounds_up() -> None:
     assert combat.damage(char_1, char_2) == {
         "name": "",
         "health": 998,
-        "level": 1,
+        "level": 100,
         "is_dead": False,
     }
