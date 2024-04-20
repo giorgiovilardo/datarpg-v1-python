@@ -131,3 +131,9 @@ def test_character_must_be_in_range_to_damage(
     expected: Character,
 ) -> None:
     assert combat.damage(char_1, char_2) == expected
+
+
+def test_allies_cannot_damage_in_between_them() -> None:
+    char_1 = Character.melee(id=1, factions=["t"])
+    char_2 = Character.melee(id=2, factions=["t"])
+    assert combat.damage(char_1, char_2) == char_2

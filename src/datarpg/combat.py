@@ -2,6 +2,8 @@ import dataclasses
 import math
 from typing import Any, ClassVar, Protocol
 
+from src.datarpg.faction import HasFactions, is_ally
+
 DAMAGE_VARIATION_THRESHOLD = 5
 
 
@@ -22,7 +24,7 @@ class Rangeable(Protocol):
     range: int
 
 
-class CanFight(Liveable, Damageable, Identifiable, Rangeable, Protocol):
+class CanFight(HasFactions, Liveable, Damageable, Identifiable, Rangeable, Protocol):
     __dataclass_fields__: ClassVar[dict[str, Any]]
 
 
@@ -39,6 +41,8 @@ def damage(attacker: CanFight, defender: CanFight) -> CanFight:
         return defender
     if attacker.id == defender.id:
         return attacker
+    if is_ally(attacker, defender):
+        return defender
     _damage = _calculate_damage(attacker, defender)
     new_health = max(defender.health - _damage, 0)
     is_dead = new_health == 0

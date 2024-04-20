@@ -26,13 +26,17 @@ class Character:
         health: int = 1000,
         level: int = 1,
         is_dead: bool = False,
+        factions: list[str] | None = None,
     ) -> Self:
         """Return a melee character with your options."""
+        if factions is None:
+            factions = []
         return cls(
             id=id,
             health=health,
             level=level,
             is_dead=is_dead,
+            factions=factions,
             role=Role.MELEE,
             range=2,
         )
@@ -45,13 +49,17 @@ class Character:
         health: int = 1000,
         level: int = 1,
         is_dead: bool = False,
+        factions: list[str] | None = None,
     ) -> Self:
         """Return a melee character with your options."""
+        if factions is None:
+            factions = []
         return cls(
             id=id,
             health=health,
             level=level,
             is_dead=is_dead,
+            factions=factions,
             role=Role.RANGED,
             range=20,
         )
