@@ -12,11 +12,26 @@ def test_damage() -> None:
 
 
 def test_damage_ez_test_ez_life() -> None:
-    assert combat.damage({"level": 2}, {"health": 1000, "is_dead": True}) == {
+    assert combat.damage({"level": 2}, {"health": 1000, "is_dead": False}) == {
         "health": 998,
         "is_dead": False,
     }
     assert combat.damage({"level": 2000}, {"health": 1000, "is_dead": True}) == {
         "health": 0,
         "is_dead": True,
+    }
+
+
+def test_heal() -> None:
+    assert combat.heal({"level": 2}, {"health": 900, "is_dead": False}) == {
+        "health": 902,
+        "is_dead": False,
+    }
+    assert combat.heal({"level": 2000}, {"health": 0, "is_dead": True}) == {
+        "health": 0,
+        "is_dead": True,
+    }
+    assert combat.heal({"level": 2000}, {"health": 1, "is_dead": False}) == {
+        "health": 1000,
+        "is_dead": False,
     }
