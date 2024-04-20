@@ -16,7 +16,9 @@ distribution = false
 [tool.pdm.scripts]
 fmt = "ruff format --preview src tests"
 lint = "ruff check --preview --fix src tests"
-fl = { composite = ["lint", "fmt"] }
+mypy = "mypy --strict --explicit-package-bases src tests"
+pyright = "pyright src tests"
+fl = { composite = ["mypy", "pyright", "lint", "fmt"] }
 
 [tool.pdm.dev-dependencies]
 dev = [
