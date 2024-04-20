@@ -137,3 +137,13 @@ def test_allies_cannot_damage_in_between_them() -> None:
     char_1 = Character.melee(id=1, factions=["t"])
     char_2 = Character.melee(id=2, factions=["t"])
     assert combat.damage(char_1, char_2) == char_2
+
+
+def test_allies_can_heal_in_between_them() -> None:
+    char_1 = Character.melee(id=1, factions=["t"])
+    char_2 = Character.melee(id=2, factions=["t"], health=1)
+    assert combat.heal(char_1, char_2) == Character.melee(
+        id=2,
+        factions=["t"],
+        health=2,
+    )

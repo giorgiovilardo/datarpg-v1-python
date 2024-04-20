@@ -52,6 +52,6 @@ def damage(attacker: CanFight, defender: CanFight) -> CanFight:
 def heal(healer: CanFight, healed: CanFight) -> CanFight:
     if healed.is_dead:
         return healed
-    if healer.id != healed.id:
+    if healer.id != healed.id and not is_ally(healer, healed):
         return healed
     return dataclasses.replace(healed, health=min(healer.level + healed.health, 1000))
