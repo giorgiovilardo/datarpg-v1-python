@@ -15,7 +15,7 @@ distribution = false
 
 [tool.pdm.scripts]
 fmt = "ruff format --preview src tests"
-lint = "ruff check --preview --fix src tests"
+lint = "ruff check --preview --fix --select I src tests"
 mypy = "mypy --strict --explicit-package-bases src tests"
 pyright = "pyright src tests"
 fl = { composite = ["mypy", "pyright", "lint", "fmt"] }
@@ -45,3 +45,6 @@ lint.ignore = [
     "E501", "D203", "D212", "D104", "D100", "D101", "D106", "D103",
     "COM812"
 ]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]
