@@ -24,7 +24,9 @@ dev = [
     "pytest>=8.1.1",
     "ipython>=8.23.0",
     "ipdb>=0.13.13",
-    "ruff-lsp>=0.0.53"
+    "ruff-lsp>=0.0.53",
+    "mypy>=1.9.0",
+    "pyright>=1.1.359",
 ]
 
 [tool.ruff]

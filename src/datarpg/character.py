@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Any, Self
+from typing import Self
 
 
 class Role(StrEnum):
@@ -18,11 +18,39 @@ class Character:
     range: int = 2
 
     @classmethod
-    def melee(cls: Self, **kwargs: dict[str, Any] | int) -> Self:
+    def melee(
+        cls: type[Self],
+        *,
+        id: int,
+        health: int = 1000,
+        level: int = 1,
+        is_dead: bool = False,
+    ) -> Self:
         """Return a melee character with your options."""
-        return cls(**kwargs, role=Role.MELEE, range=2)
+        return cls(
+            id=id,
+            health=health,
+            level=level,
+            is_dead=is_dead,
+            role=Role.MELEE,
+            range=2,
+        )
 
     @classmethod
-    def ranged(cls: Self, **kwargs: dict[str, Any] | int) -> Self:
-        """Return a ranged character with your options."""
-        return cls(**kwargs, role=Role.RANGED, range=20)
+    def ranged(
+        cls: type[Self],
+        *,
+        id: int,
+        health: int = 1000,
+        level: int = 1,
+        is_dead: bool = False,
+    ) -> Self:
+        """Return a melee character with your options."""
+        return cls(
+            id=id,
+            health=health,
+            level=level,
+            is_dead=is_dead,
+            role=Role.RANGED,
+            range=20,
+        )

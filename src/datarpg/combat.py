@@ -1,6 +1,6 @@
 import dataclasses
 import math
-from typing import Protocol
+from typing import Any, ClassVar, Protocol
 
 DAMAGE_VARIATION_THRESHOLD = 5
 
@@ -23,7 +23,7 @@ class Rangeable(Protocol):
 
 
 class CanFight(Liveable, Damageable, Identifiable, Rangeable, Protocol):
-    pass
+    __dataclass_fields__: ClassVar[dict[str, Any]]
 
 
 def _calculate_damage(attacker: Damageable, defender: Damageable) -> int:
