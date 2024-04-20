@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Self
 
@@ -16,6 +16,7 @@ class Character:
     is_dead: bool = False
     role: Role = Role.MELEE
     range: int = 2
+    factions: list[str] = field(default_factory=list)
 
     @classmethod
     def melee(

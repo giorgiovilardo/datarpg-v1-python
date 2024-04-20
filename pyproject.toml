@@ -14,7 +14,7 @@ license = { text = "MIT" }
 distribution = false
 
 [tool.pdm.scripts]
-fmt = "ruff format src tests"
+fmt = "ruff format --preview src tests"
 lint = "ruff check --preview --fix src tests"
 fl = { composite = ["lint", "fmt"] }
 
@@ -40,5 +40,6 @@ lint.select = [
     "PL", "R", "FLY", "PERF", "FURB", "RUF"
 ]
 lint.ignore = [
-    "E501", "D203", "D212", "D104", "D100", "D101", "D106", "D103"
+    "E501", "D203", "D212", "D104", "D100", "D101", "D106", "D103",
+    "COM812"
 ]
