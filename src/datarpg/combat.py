@@ -18,7 +18,11 @@ class Liveable(Protocol):
     is_dead: bool
 
 
-class CanFight(Liveable, Damageable, Identifiable, Protocol):
+class Rangeable(Protocol):
+    range: int
+
+
+class CanFight(Liveable, Damageable, Identifiable, Rangeable, Protocol):
     pass
 
 
@@ -31,6 +35,8 @@ def _calculate_damage(attacker: Damageable, defender: Damageable) -> int:
 
 
 def damage(attacker: CanFight, defender: CanFight) -> CanFight:
+    if attacker.range < defender.range:
+        return defender
     if attacker.id == defender.id:
         return attacker
     _damage = _calculate_damage(attacker, defender)

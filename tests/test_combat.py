@@ -1,4 +1,7 @@
+import pytest
+
 from src.datarpg import character, combat
+from src.datarpg.character import Character
 
 
 def test_character_are_damaged_in_combat() -> None:
@@ -95,3 +98,36 @@ def test_scales_damage_up_with_math_ceil() -> None:
         health=998,
         level=6,
     )
+
+
+@pytest.mark.parametrize(
+    ("char_1", "char_2", "expected"),
+    [
+        (
+            character.Character.melee(id=1),
+            character.Character.ranged(id=2),
+            character.Character.ranged(id=2),
+        ),
+        (
+            character.Character.ranged(id=1),
+            character.Character.melee(id=2),
+            character.Character.melee(id=2, health=999),
+        ),
+        (
+            character.Character.ranged(id=1),
+            character.Character.ranged(id=2),
+            character.Character.ranged(id=2, health=999),
+        ),
+        (
+            character.Character.melee(id=1),
+            character.Character.melee(id=2),
+            character.Character.melee(id=2, health=999),
+        ),
+    ],
+)
+def test_character_must_be_in_range_to_damage(
+    char_1: Character,
+    char_2: Character,
+    expected: Character,
+) -> None:
+    assert combat.damage(char_1, char_2) == expected

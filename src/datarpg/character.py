@@ -18,11 +18,11 @@ class Character:
     range: int = 2
 
     @classmethod
-    def melee(cls: Self, **kwargs: dict[str, Any]) -> Self:
+    def melee(cls: Self, **kwargs: dict[str, Any] | int) -> Self:
         """Return a melee character with your options."""
         return cls(**kwargs, role=Role.MELEE, range=2)
 
     @classmethod
-    def ranged(cls: Self, **kwargs: dict[str, Any]) -> Self:
+    def ranged(cls: Self, **kwargs: dict[str, Any] | int) -> Self:
         """Return a ranged character with your options."""
         return cls(**kwargs, role=Role.RANGED, range=20)
