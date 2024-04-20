@@ -2,6 +2,61 @@
 
 ### Data oriented - RPG Combat Kata
 
+A venture into the world of typesafe data oriented programming with python.
+
+Constraints:
+
+* use only `dataclass`, no `dict` or `TypedDict`;
+  * necessary for IDE autocompletion and dot syntax
+* use `Protocol`s for structural subtyping
+* `mypy, pyright, ruff` with almost all rules and high strictness level must always have no warnings
+* `pytest` always green (other than refactor cycles obviously)
+* understand if extremely dynamic data-orientedness (everthing is a map) can be tempered in a modicum of typesafety and
+  IDE help
+* have fun
+
+Retrospective:
+
+I think the mission was a failure (other than the fun part).
+My first insight was to shove everything combat-related in a combat module, but iteration five (add props)
+bit me in the butt and forced me to `make the change easy then make the easy change` so I divided everything
+in specific functions per type plus a general orchestrator in the combat module. In the end, I am still too coupled
+to specific type names more than shapes and my generic functions is basically ugly single dispatch.
+Nothing like clojure multimethods! This looks like some sort of weird semifunctional exercise :)
+
+* understand if `TypedDict`s can compose, but I think not;
+  * wonder if using dataclasses for IDE completion but then just passing `dataclass.asdict()` makes sense
+  * is `TypedDict` able to work like a TS interface?
+* Protocols had to intermingle with dataclass specific implementation dunders to not make mypy go crazy when using `dataclass.replace()`
+  * price to pay for the dataclass constraint
+  * copying dataclasses like that really sucks
+* seems like multiple inheritance with mixins is stil the way to go to not get crazy with `cast()` and so on
+  * i.e. things like
+
+```python
+@dataclass
+class Health:
+    _health: int
+    
+    def health(self) -> int:
+        return self._health
+```
+  * need to expose methods rather than fields
+* no world state to handle
+* pure functions still beat everything when testing
+* wondering how this would look like in Scala, JS/TS, classical OOP
+  * Scala
+    * typeclasses implementation to not couple to names
+  * TS
+    * intersection types seem incredibly powerful
+    * JS objects are basically anonymous classes + hashmaps
+    * TS type system is way better than py one 
+* changes were actually very easy but I don't know if it's just because the exercise is too basic.
+
+___
+
+### Source material
+
 Source: [https://github.com/ardalis/kata-catalog](https://github.com/ardalis/kata-catalog)
 
 ### Background
