@@ -1,3 +1,4 @@
+import math
 from typing import TypedDict
 
 
@@ -25,14 +26,23 @@ class Defender(Liver, HasHealth, HasName, HasLevel):
     pass
 
 
-def _new_health(attacker_power: int, defender_life: int) -> int:
-    return max(defender_life - attacker_power, 0)
+def _calculate_attack_power(
+    attacker_level: int,
+    defender_level: int,
+) -> int:
+    threshold = 5
+    if attacker_level - defender_level >= threshold:
+        return attacker_level // 2
+    if defender_level - attacker_level >= threshold:
+        return attacker_level + math.ceil(attacker_level / 2)
+    return attacker_level
 
 
 def damage(attacker: Attacker, defender: Defender) -> Defender:
     if attacker["name"] == defender["name"]:
         return defender
-    new_health = _new_health(attacker["level"], defender["health"])
+    attacker_power = _calculate_attack_power(attacker["level"], defender["level"])
+    new_health = max(defender["health"] - attacker_power, 0)
     is_dead = new_health == 0
     return {
         **defender,

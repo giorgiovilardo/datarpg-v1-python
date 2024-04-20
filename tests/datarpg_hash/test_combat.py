@@ -82,7 +82,7 @@ def test_damage_is_increased_if_attacker_level_is_lower_than_defender() -> None:
     assert combat.damage(char_1, char_2) == {
         "name": "",
         "health": 997,
-        "level": 1,
+        "level": 100,
         "is_dead": False,
     }
 
@@ -96,5 +96,29 @@ def test_damage_increased_rounds_up() -> None:
         "name": "",
         "health": 998,
         "level": 100,
+        "is_dead": False,
+    }
+
+
+def test_damage_is_decreased_if_attacker_level_is_higher_than_defender() -> None:
+    char_1 = character.default()
+    char_1.update({"name": "mastro", "level": 100})
+    char_2 = character.default()
+    assert combat.damage(char_1, char_2) == {
+        "name": "",
+        "health": 950,
+        "level": 1,
+        "is_dead": False,
+    }
+
+
+def test_damage_decreased_rounds_down() -> None:
+    char_1 = character.default()
+    char_1.update({"name": "mastro", "level": 7})
+    char_2 = character.default()
+    assert combat.damage(char_1, char_2) == {
+        "name": "",
+        "health": 997,
+        "level": 1,
         "is_dead": False,
     }
