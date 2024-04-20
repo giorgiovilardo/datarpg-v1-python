@@ -1,6 +1,10 @@
+import dataclasses
+import math
 from dataclasses import dataclass, field
 from enum import StrEnum
-from typing import Self
+from typing import Self, cast
+
+from src.datarpg.faction import HasFactions, is_ally
 
 
 class Role(StrEnum):
@@ -63,3 +67,33 @@ class Character:
             role=Role.RANGED,
             range=20,
         )
+
+
+def damage(attacker: Character, defender: Character) -> Character:
+    damage_variation_threshold = 5
+
+    def _calculate_damage(a: Character, d: Character) -> int:
+        if a.level - d.level >= damage_variation_threshold:
+            return a.level // 2
+        if d.level - a.level >= damage_variation_threshold:
+            return math.ceil(a.level * 1.5)
+        return a.level
+
+    if attacker.range < defender.range:
+        return defender
+    if attacker.id == defender.id:
+        return attacker
+    if is_ally(attacker, defender):
+        return defender
+    _damage = _calculate_damage(attacker, defender)
+    new_health = max(defender.health - _damage, 0)
+    is_dead = new_health == 0
+    return dataclasses.replace(defender, health=new_health, is_dead=is_dead)
+
+
+def heal(healer: Character, healed: Character) -> Character:
+    if healer.id != healed.id and not is_ally(
+        cast(HasFactions, healer), cast(HasFactions, healed)
+    ):
+        return healed
+    return dataclasses.replace(healed, health=min(healer.level + healed.health, 1000))

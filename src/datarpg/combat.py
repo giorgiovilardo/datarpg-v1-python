@@ -1,57 +1,41 @@
-import dataclasses
-import math
-from typing import Any, ClassVar, Protocol
+from typing import Any, ClassVar, Protocol, cast
 
-from src.datarpg.faction import HasFactions, is_ally
-
-DAMAGE_VARIATION_THRESHOLD = 5
+from src.datarpg import character, prop
+from src.datarpg.character import Character
+from src.datarpg.prop import Prop, is_prop
 
 
-class Identifiable(Protocol):
-    id: int
+class IsProp(Protocol):
+    is_destroyed: bool
 
 
-class Damageable(Protocol):
+class IsCharacter(Protocol):
     level: int
     health: int
 
 
-class Liveable(Protocol):
-    is_dead: bool
+class HasHealth(Protocol):
+    health: int
 
 
-class Rangeable(Protocol):
-    range: int
-
-
-class CanFight(HasFactions, Liveable, Damageable, Identifiable, Rangeable, Protocol):
+class CanFight(IsProp, IsCharacter, Protocol):
     __dataclass_fields__: ClassVar[dict[str, Any]]
 
 
-def _calculate_damage(attacker: Damageable, defender: Damageable) -> int:
-    if attacker.level - defender.level >= DAMAGE_VARIATION_THRESHOLD:
-        return attacker.level // 2
-    if defender.level - attacker.level >= DAMAGE_VARIATION_THRESHOLD:
-        return math.ceil(attacker.level * 1.5)
-    return attacker.level
-
-
-def damage(attacker: CanFight, defender: CanFight) -> CanFight:
-    if attacker.range < defender.range:
+def damage(attacker: CanFight, defender: CanFight) -> HasHealth:
+    if is_prop(attacker):
         return defender
-    if attacker.id == defender.id:
-        return attacker
-    if is_ally(attacker, defender):
-        return defender
-    _damage = _calculate_damage(attacker, defender)
-    new_health = max(defender.health - _damage, 0)
-    is_dead = new_health == 0
-    return dataclasses.replace(defender, health=new_health, is_dead=is_dead)
+    if is_prop(defender):
+        assert isinstance(defender, Prop)
+        return prop.damage(defender, attacker.level)
+    assert isinstance(attacker, Character)
+    assert isinstance(defender, Character)
+    return cast(HasHealth, character.damage(attacker, defender))
 
 
 def heal(healer: CanFight, healed: CanFight) -> CanFight:
-    if healed.is_dead:
+    if is_prop(healer) or is_prop(healed):
         return healed
-    if healer.id != healed.id and not is_ally(healer, healed):
-        return healed
-    return dataclasses.replace(healed, health=min(healer.level + healed.health, 1000))
+    assert isinstance(healed, Character)
+    assert isinstance(healer, Character)
+    return cast(CanFight, character.heal(healer, healed))
