@@ -9,3 +9,9 @@ class HasFactions(Protocol):
 
 def join(joiner: HasFactions, faction: str) -> HasFactions:
     return dataclasses.replace(joiner, factions=[*joiner.factions, faction])
+
+
+def leave(joiner: HasFactions, faction: str) -> HasFactions:
+    return dataclasses.replace(
+        joiner, factions=[f for f in joiner.factions if f != faction]
+    )
