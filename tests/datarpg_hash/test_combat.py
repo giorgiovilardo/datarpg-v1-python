@@ -70,3 +70,29 @@ def test_heal_can_not_heal_other() -> None:
 def test_same_char_cannot_hit_itself() -> None:
     char_1 = character.default()
     assert combat.damage(char_1, char_1) == char_1
+
+
+def test_damage_is_increased_if_attacker_level_is_lower_than_defender() -> None:
+    char_1 = character.default()
+    char_1.update({"name": "mastro", "level": 2})
+    char_2 = character.default()
+    char_2.update({"level": 100})
+    assert combat.damage(char_1, char_2) == {
+        "name": "",
+        "health": 997,
+        "level": 1,
+        "is_dead": False,
+    }
+
+
+def test_damage_increased_rounds_up() -> None:
+    char_1 = character.default()
+    char_1.update({"name": "mastro"})
+    char_2 = character.default()
+    char_2.update({"level": 100})
+    assert combat.damage(char_1, char_2) == {
+        "name": "",
+        "health": 998,
+        "level": 1,
+        "is_dead": False,
+    }
