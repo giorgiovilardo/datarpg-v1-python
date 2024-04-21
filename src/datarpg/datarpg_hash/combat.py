@@ -1,6 +1,8 @@
 import math
 from typing import TypedDict
 
+from src.datarpg.datarpg_hash import character
+
 
 class Liver(TypedDict):
     is_dead: bool
@@ -29,21 +31,34 @@ class Defender(Liver, HasHealth, HasName, HasLevel):
 def _calculate_attack_power(
     attacker_level: int,
     defender_level: int,
+    level_threshold: int = 5,
+    power_multiplier: int = 2,
 ) -> int:
-    threshold = 5
-    if attacker_level - defender_level >= threshold:
-        return attacker_level // 2
-    if defender_level - attacker_level >= threshold:
-        return attacker_level + math.ceil(attacker_level / 2)
-    return attacker_level
+    match attacker_level - defender_level:
+        case diff if diff >= level_threshold:
+            return attacker_level // power_multiplier
+        case diff if abs(diff) >= level_threshold:
+            return attacker_level + math.ceil(attacker_level / power_multiplier)
+        case _:
+            return attacker_level
+
+
+def _calculate_new_life_stats(
+    defender_health: int,
+    attacker_power: int,
+) -> tuple[int, bool]:
+    new_health = max(defender_health - attacker_power, 0)
+    is_dead = new_health <= 0
+    return new_health, is_dead
 
 
 def damage(attacker: Attacker, defender: Defender) -> Defender:
-    if attacker["name"] == defender["name"]:
+    # public function, should be properly validated
+    # but for the moment is typechecked
+    if character.is_the_same(attacker, defender):
         return defender
     attacker_power = _calculate_attack_power(attacker["level"], defender["level"])
-    new_health = max(defender["health"] - attacker_power, 0)
-    is_dead = new_health == 0
+    new_health, is_dead = _calculate_new_life_stats(defender["health"], attacker_power)
     return {
         **defender,
         "health": new_health,
@@ -61,8 +76,18 @@ class Healed(Liver, HasHealth, HasName):
     pass
 
 
+def _can_be_healed(healer: Healer, healed: Healed) -> bool:
+    if healer["is_dead"]:
+        return False
+    if not character.is_the_same(healer, healed):
+        return False
+    return True
+
+
 def heal(healer: Healer, healed: Healed) -> Healed:
-    if healer["is_dead"] or healer["name"] != healed["name"]:
+    # public function, should be properly validated
+    # but for the moment is typechecked
+    if not _can_be_healed(healer, healed):
         return healed
     new_health = min(healer["level"] + healer["health"], 1000)
     return {

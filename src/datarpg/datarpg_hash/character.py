@@ -10,3 +10,12 @@ class Character(TypedDict):
 
 def default() -> Character:
     return {"name": "", "health": 1000, "level": 1, "is_dead": False}
+
+
+class HasName(TypedDict):
+    name: str
+
+
+def is_the_same(a: HasName, b: HasName) -> bool:
+    # public function, should be validated
+    return a["name"] == b["name"]
