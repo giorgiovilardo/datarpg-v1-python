@@ -63,3 +63,7 @@ def join_faction(char: HasFactions, faction: str) -> HasFactions:
 def leave_faction(char: HasFactions, faction: str) -> HasFactions:
     new_factions = [f for f in char["factions"] if f != faction]
     return char | {"factions": new_factions}
+
+
+def are_allies(char_1: HasFactions, char_2: HasFactions) -> bool:
+    return len(set(char_1["factions"]) & set(char_2["factions"])) > 0
