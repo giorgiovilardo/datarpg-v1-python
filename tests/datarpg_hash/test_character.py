@@ -8,3 +8,5 @@ def test_default_character() -> None:
 
 def test_characters_have_range() -> None:
     assert "range" in character.default()
+    assert character.default()["range"] == character.MELEE_RANGE
+    assert character.default_ranged()["range"] == character.RANGED_RANGE
