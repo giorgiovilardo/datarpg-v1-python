@@ -104,6 +104,8 @@ def test_allies_cannot_fight() -> None:
 
 
 def test_allies_can_heal() -> None:
-    char_1 = character.default()
-    char_2 = cast(Healed, character.default() | {"health": 900, "name": "f"})
+    char_1 = character.default() | {"factions": ["a"]}
+    char_2 = cast(
+        Healed, character.default() | {"health": 900, "name": "f", "factions": ["a"]}
+    )
     assert combat.heal(char_1, char_2)["health"] == 901

@@ -24,11 +24,15 @@ class HasRange(TypedDict):
     range: int
 
 
-class Attacker(HasName, HasLevel, HasRange):
+class HasFactions(TypedDict):
+    factions: list[str]
+
+
+class Attacker(HasName, HasLevel, HasRange, HasFactions):
     pass
 
 
-class Defender(Liver, HasHealth, HasName, HasLevel, HasRange):
+class Defender(Liver, HasHealth, HasName, HasLevel, HasRange, HasFactions):
     pass
 
 
@@ -61,6 +65,8 @@ def _is_attack_forbidden(attacker: Attacker, defender: Defender) -> bool:
         return True
     if attacker["range"] < defender["range"]:
         return True
+    if character.are_allies(attacker, defender):
+        return True
     return False
 
 
@@ -78,23 +84,24 @@ def damage(attacker: Attacker, defender: Defender) -> Defender:
         "name": defender["name"],
         "level": defender["level"],
         "range": defender["range"],
+        "factions": defender["factions"],
     }
 
 
-class Healer(Liver, HasLevel, HasHealth, HasName):
+class Healer(Liver, HasLevel, HasHealth, HasName, HasFactions):
     pass
 
 
-class Healed(Liver, HasHealth, HasName):
+class Healed(Liver, HasHealth, HasName, HasFactions):
     pass
 
 
 def _can_be_healed(healer: Healer, healed: Healed) -> bool:
-    if healer["is_dead"]:
+    if healer["is_dead"] or healed["is_dead"]:
         return False
-    if not character.is_the_same(healer, healed):
-        return False
-    return True
+    if character.is_the_same(healer, healed) or character.are_allies(healer, healed):
+        return True
+    return False
 
 
 def heal(healer: Healer, healed: Healed) -> Healed:
@@ -102,10 +109,11 @@ def heal(healer: Healer, healed: Healed) -> Healed:
     # but for the moment is typechecked
     if not _can_be_healed(healer, healed):
         return healed
-    new_health = min(healer["level"] + healer["health"], 1000)
+    new_health = min(healer["level"] + healed["health"], 1000)
     return {
         **healed,
         "health": new_health,
         "is_dead": healer["is_dead"],
         "name": healer["name"],
+        "factions": healer["factions"],
     }
