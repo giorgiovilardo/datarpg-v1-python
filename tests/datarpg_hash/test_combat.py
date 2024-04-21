@@ -1,7 +1,7 @@
-from typing import Any
+from typing import Any, cast
 
 from src.datarpg.datarpg_hash import character, combat
-from src.datarpg.datarpg_hash.combat import Defender
+from src.datarpg.datarpg_hash.combat import Attacker, Defender, Healed
 
 
 def _do_combat(
@@ -14,8 +14,8 @@ def _do_combat(
     if defender_opts is None:
         defender_opts = {}
     return combat.damage(
-        character.default() | {"name": "attacker"} | attacker_opts,
-        character.default() | {"name": "defender"} | defender_opts,
+        cast(Attacker, character.default() | {"name": "attacker"} | attacker_opts),
+        cast(Defender, character.default() | {"name": "defender"} | defender_opts),
     )
 
 
@@ -49,7 +49,7 @@ def test_heal_health_cant_go_over_1000() -> None:
 
 def test_heal_can_not_heal_other() -> None:
     char_1 = character.default()
-    char_2 = character.default() | {"health": 900, "name": "f"}
+    char_2 = cast(Healed, character.default() | {"health": 900, "name": "f"})
     assert combat.heal(char_1, char_2) == char_2
 
 
