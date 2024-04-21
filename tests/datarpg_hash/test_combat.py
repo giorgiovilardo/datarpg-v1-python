@@ -1,47 +1,30 @@
-from collections.abc import Callable
 from typing import Any
 
 from src.datarpg.datarpg_hash import character, combat
 from src.datarpg.datarpg_hash.combat import Defender
 
 
-def _combat_between(
+def _do_combat(
     *,
-    char_1_opts: dict[str, Any] | None = None,
-    char_2_opts: dict[str, Any] | None = None,
+    attacker_opts: dict[str, Any] | None = None,
+    defender_opts: dict[str, Any] | None = None,
 ) -> Defender:
-    return _call_fn_with_char_opts(combat.damage, char_1_opts, char_2_opts)
-
-
-def _heal_between(
-    *,
-    char_1_opts: dict[str, Any] | None = None,
-    char_2_opts: dict[str, Any] | None = None,
-) -> Defender:
-    return _call_fn_with_char_opts(combat.heal, char_1_opts, char_2_opts)
-
-
-def _call_fn_with_char_opts(
-    method: Callable[[Any, Any], Any],
-    char_1_opts: dict[str, Any] | None = None,
-    char_2_opts: dict[str, Any] | None = None,
-) -> Defender:
-    if char_1_opts is None:
-        char_1_opts = {}
-    if char_2_opts is None:
-        char_2_opts = {}
-    return method(
-        character.default() | char_1_opts,
-        character.default() | char_2_opts,
+    if attacker_opts is None:
+        attacker_opts = {}
+    if defender_opts is None:
+        defender_opts = {}
+    return combat.damage(
+        character.default() | {"name": "attacker"} | attacker_opts,
+        character.default() | {"name": "defender"} | defender_opts,
     )
 
 
 def test_damage() -> None:
-    assert _combat_between(char_1_opts={"name": "f"})["health"] == 999
+    assert _do_combat()["health"] == 999
 
 
-def test_damage_can_kill_if_under_zero() -> None:
-    second_combat = _combat_between(char_1_opts={"level": 2000, "name": "k"})
+def test_damage_kills_if_health_goes_under_zero() -> None:
+    second_combat = _do_combat(attacker_opts={"level": 2000})
     assert second_combat["health"] == 0
     assert second_combat["is_dead"] is True
 
@@ -77,20 +60,33 @@ def test_same_char_cannot_hit_itself() -> None:
 
 def test_damage_is_increased_if_attacker_level_is_lower_than_defender() -> None:
     assert (
-        _combat_between(
-            char_1_opts={"level": 2}, char_2_opts={"name": "m", "level": 100}
-        )["health"]
+        _do_combat(attacker_opts={"level": 2}, defender_opts={"level": 100})["health"]
         == 997
     )
 
 
 def test_damage_increased_rounds_up() -> None:
-    assert _combat_between(char_2_opts={"name": "m", "level": 100})["health"] == 998
+    assert _do_combat(defender_opts={"level": 100})["health"] == 998
 
 
 def test_damage_is_decreased_if_attacker_level_is_higher_than_defender() -> None:
-    assert _combat_between(char_1_opts={"name": "m", "level": 100})["health"] == 950
+    assert _do_combat(attacker_opts={"level": 100})["health"] == 950
 
 
 def test_damage_decreased_rounds_down() -> None:
-    assert _combat_between(char_1_opts={"name": "m", "level": 7})["health"] == 997
+    assert _do_combat(attacker_opts={"level": 7})["health"] == 997
+
+
+def test_combat_allowed_only_if_attacker_in_range_of_defender() -> None:
+    assert (
+        _do_combat(attacker_opts={"range": 2}, defender_opts={"range": 20})["health"]
+        == 1000
+    )
+    assert (
+        _do_combat(attacker_opts={"range": 2}, defender_opts={"range": 2})["health"]
+        == 999
+    )
+    assert (
+        _do_combat(attacker_opts={"range": 20}, defender_opts={"range": 2})["health"]
+        == 999
+    )

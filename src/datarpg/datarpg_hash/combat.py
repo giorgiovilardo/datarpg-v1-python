@@ -20,11 +20,15 @@ class HasLevel(TypedDict):
     level: int
 
 
-class Attacker(HasName, HasLevel):
+class HasRange(TypedDict):
+    range: int
+
+
+class Attacker(HasName, HasLevel, HasRange):
     pass
 
 
-class Defender(Liver, HasHealth, HasName, HasLevel):
+class Defender(Liver, HasHealth, HasName, HasLevel, HasRange):
     pass
 
 
@@ -52,10 +56,18 @@ def _calculate_new_life_stats(
     return new_health, is_dead
 
 
+def _is_attack_forbidden(attacker: Attacker, defender: Defender) -> bool:
+    if character.is_the_same(attacker, defender):
+        return True
+    if attacker["range"] < defender["range"]:
+        return True
+    return False
+
+
 def damage(attacker: Attacker, defender: Defender) -> Defender:
     # public function, should be properly validated
     # but for the moment is typechecked
-    if character.is_the_same(attacker, defender):
+    if _is_attack_forbidden(attacker, defender):
         return defender
     attacker_power = _calculate_attack_power(attacker["level"], defender["level"])
     new_health, is_dead = _calculate_new_life_stats(defender["health"], attacker_power)
@@ -65,6 +77,7 @@ def damage(attacker: Attacker, defender: Defender) -> Defender:
         "is_dead": is_dead,
         "name": defender["name"],
         "level": defender["level"],
+        "range": defender["range"],
     }
 
 
