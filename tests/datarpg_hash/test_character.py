@@ -1,4 +1,5 @@
 from src.datarpg.datarpg_hash import character
+from src.datarpg.datarpg_hash.character import HasFactions
 
 
 def test_default_character() -> None:
@@ -17,7 +18,7 @@ def test_characters_have_factions_but_start_with_none() -> None:
 
 
 def test_characters_can_join_or_leave_factions() -> None:
-    char = character.default()
+    char: HasFactions = character.default()
     assert not character.has_factions(char)
     char = character.join_faction(char, "test_faction")
     assert character.has_factions(char)
@@ -27,8 +28,8 @@ def test_characters_can_join_or_leave_factions() -> None:
 
 
 def test_characters_can_be_allies() -> None:
-    char_1 = character.default()
-    char_2 = character.default_ranged()
+    char_1: HasFactions = character.default()
+    char_2: HasFactions = character.default_ranged()
     char_1 = character.join_faction(char_1, "test_faction")
     char_2 = character.join_faction(char_2, "test_faction")
     assert character.are_allies(char_1, char_2)

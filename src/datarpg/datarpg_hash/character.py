@@ -1,5 +1,8 @@
 from typing import TypedDict
 
+MELEE_RANGE = 2
+RANGED_RANGE = 20
+
 
 class HasName(TypedDict):
     name: str
@@ -9,15 +12,11 @@ class HasFactions(TypedDict):
     factions: list[str]
 
 
-class Character(HasName, HasFactions):
+class Character(HasFactions, HasName, TypedDict):
     health: int
     level: int
     is_dead: bool
     range: int
-
-
-MELEE_RANGE = 2
-RANGED_RANGE = 20
 
 
 def default() -> Character:

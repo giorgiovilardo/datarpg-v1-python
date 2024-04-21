@@ -2,6 +2,14 @@
 
 ### Data oriented - RPG Combat Kata
 
+#### v2
+
+![img.png](img.png)
+
+Pycharm inspection seems broken; pyright does say anything?
+
+#### v1
+
 A venture into the world of typesafe data oriented programming with python.
 
 Constraints:

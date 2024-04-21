@@ -1,7 +1,7 @@
 from typing import Any, cast
 
 from src.datarpg.datarpg_hash import character, combat
-from src.datarpg.datarpg_hash.combat import Attacker, Defender, Healed
+from src.datarpg.datarpg_hash.combat import Attacker, Defender, Healed, Healer
 
 
 def _do_combat(
@@ -36,15 +36,17 @@ def test_heal_can_heal_himself() -> None:
 
 
 def test_heal_cannot_heal_if_dead() -> None:
-    char_1 = character.default()
-    char_1.update({"is_dead": True})
-    assert combat.heal(char_1, char_1) == char_1
+    """Not correctly understood by pyright."""
+    char_1 = cast(Healer, character.default() | {"is_dead": True})
+    char_2 = cast(Healed, character.default() | {"is_dead": True})
+    assert combat.heal(char_1, char_2) == char_2
 
 
 def test_heal_health_cant_go_over_1000() -> None:
-    char_1 = character.default()
-    char_1.update({"level": 2000, "health": 900})
-    assert combat.heal(char_1, char_1)["health"] == 1000
+    """Not correctly understood by pyright."""
+    char_1 = cast(Healer, character.default() | {"is_dead": True})
+    char_2 = cast(Healed, character.default() | {"is_dead": True})
+    assert combat.heal(char_1, char_2)["health"] == 1000
 
 
 def test_heal_can_not_heal_other() -> None:
@@ -90,3 +92,18 @@ def test_combat_allowed_only_if_attacker_in_range_of_defender() -> None:
         _do_combat(attacker_opts={"range": 20}, defender_opts={"range": 2})["health"]
         == 999
     )
+
+
+def test_allies_cannot_fight() -> None:
+    assert (
+        _do_combat(
+            attacker_opts={"factions": ["a"]}, defender_opts={"factions": ["a"]}
+        )["health"]
+        == 1000
+    )
+
+
+def test_allies_can_heal() -> None:
+    char_1 = character.default()
+    char_2 = cast(Healed, character.default() | {"health": 900, "name": "f"})
+    assert combat.heal(char_1, char_2)["health"] == 901
